@@ -40,11 +40,12 @@ struct rgb {
 const int TEMP_SENSOR_PIN = 0;
 const int RF_TX_PIN = 2;
 const int RF_TXLED_PIN = 3;
+const int BUTTON_PIN = 6; //optional button for switching the backlight on and off (for example if you use battery power, you can conserve power this way)
 
 //Minimum and maximum temperature (C) used for calculating the background color gradient.
 //Color changes from blue at MIN through cyan, green, yellow to red at MAX.
 const int MIN = 16;
-const int MAX = 30;
+const int MAX = 31;
 
 //X10RF specific configuration
 const int RF_REPEATS = 4;
@@ -119,6 +120,7 @@ void setupLcd()
 
 void setup()
 {  
+  pinMode(BUTTON_PIN, INPUT);
   setupGradient();
   setupRF();  
   setupLcd();  
@@ -173,23 +175,35 @@ int calculateColorIndexFromTemp(float temp)
   return color;
 }
 
-void printTemp(float temp)
+void printTemp(float temp, int buttonState)
 {  
   lcd.setCursor(0,0);
   lcd.print("Temp. ");  
   lcd.print(temp);
   lcd.print(" C");  
 
-  int color = calculateColorIndexFromTemp(temp);
+  // check if the pushbutton is pressed.
+  // if it is, the buttonState is HIGH:
+  if (buttonState == HIGH) {
+    // turn LED on:
+    int color = calculateColorIndexFromTemp(temp);
+    lcd.setRGB(gradient[color].r,gradient[color].g, gradient[color].b);
+  } 
+  else 
+  {
+    lcd.setRGB(0,0,0);  
+  }
+
   
-  lcd.setRGB(gradient[color].r,gradient[color].g, gradient[color].b);
   delay(500);
 }
 
 void loop()
 {
   float temp = getTemperature();
-  printTemp(temp);
+
+  int buttonState = digitalRead(BUTTON_PIN); 
+  printTemp(temp, buttonState);
   unsigned long currentMillis = millis();
 
   //When interval has elapsed sent temperature
@@ -199,6 +213,8 @@ void loop()
     sendTemperature(temp,SENSOR_ID);    
 
   }  
+
+  
 }
 
 
