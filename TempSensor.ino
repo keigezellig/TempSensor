@@ -38,8 +38,8 @@ struct rgb {
 
 //Pin definitions
 const int TEMP_SENSOR_PIN = 0;
-const int RF_TX_PIN = 2;
-const int RF_TXLED_PIN = 3;
+const int RF_TX_PIN = 3;
+const int RF_TXLED_PIN = 7;
 const int BUTTON_PIN = 6; //optional button for switching the backlight on and off (for example if you use battery power, you can conserve power this way)
 
 //Minimum and maximum temperature (C) used for calculating the background color gradient.
