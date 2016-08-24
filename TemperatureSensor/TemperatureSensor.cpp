@@ -1,13 +1,13 @@
 /*
   TempSensor.ino
-  
+
   Author: keigezellig
   2016-03-04
   version: 1.0
 
   Grove temperature sensor that outputs its temperature in degrees Celsius to a RGB lcd display and through 433 mhz radio.
   As a bonus the background color changes when the temperature changes with a nice gradient
-  
+
   * -----------------------------------------------------------------------------------------------
   * "THE APPRECIATION LICENSE" (Revision 0x100):
   * Copyright (c) 2015 M. Joosten
@@ -47,16 +47,16 @@ const int MAX = 31;
 
 //X10RF specific configuration
 const int RF_REPEATS = 4;
-const int SENSOR_ID = 0x01;
+const int SENSOR_ID = 0x06;
 
 //Our rf transmitter and lcd
 rgb_lcd lcd;
 TH02TemperatureSensor sensor(SENSOR_ID, RF_TX_PIN, RF_TXLED_PIN, RF_REPEATS);
 
-unsigned long previousMillis = 0;        
+unsigned long previousMillis = 0;
 
 //Interval in ms when to send
-const long interval = 10000;           
+const long interval = 10000;
 
 //Lookup table for color gradient
 rgb gradient[100];
@@ -64,7 +64,7 @@ rgb gradient[100];
 void setupGradient()
 {
   //Calculate LUT
-  
+
   //Blue -> Cyan
   byte green = 0x00;
   for (byte i=0; i< 25; i++)
@@ -107,16 +107,17 @@ void setupGradient()
 }
 
 void setupLcd()
-{  
- lcd.begin(16, 2);    
+{
+ lcd.begin(16, 2);
 }
 
 void setup()
-{  
+{
   pinMode(BUTTON_PIN, INPUT);
-  sensor.setup();
+  Serial.begin(9600);
   setupGradient();
-  setupLcd();  
+  setupLcd();
+  sensor.setup(4000);
 }
 
 
@@ -125,7 +126,7 @@ int calculateColorIndexFromTemp(float temp)
   //Calculate index of the LUT for a given temperature.
   //Since the LUT is 100 elements, we basically calculate a percentage according to the formula:
   // ((temperature - MIN) / (MAX - MIN)) * 100
-  
+
   //Get rid of decimal point
   int T = (int)(temp * 100);
   int h = MAX * 100;
@@ -142,18 +143,19 @@ int calculateColorIndexFromTemp(float temp)
   if (color < 0)
   {
     color = 0;
-    
+
   }
 
   return color;
 }
 
 void printTemp(float temp, int buttonState)
-{  
+{
   lcd.setCursor(0,0);
-  lcd.print("Temp. ");  
+  lcd.print("Temp. ");
   lcd.print(temp);
-  lcd.print(" C");  
+  lcd.print(" C");
+  Serial.println(temp);
 
   // check if the pushbutton is pressed.
   // if it is, the buttonState is HIGH:
@@ -161,13 +163,13 @@ void printTemp(float temp, int buttonState)
     // turn LED on:
     int color = calculateColorIndexFromTemp(temp);
     lcd.setRGB(gradient[color].r,gradient[color].g, gradient[color].b);
-  } 
-  else 
+  }
+  else
   {
-    lcd.setRGB(0,0,0);  
+    lcd.setRGB(0,0,0);
   }
 
-  
+
   delay(500);
 }
 
@@ -175,9 +177,9 @@ void loop()
 {
    sensor.run();
    float temp = sensor.getTemperature();
-   int buttonState = digitalRead(BUTTON_PIN); 
+   int buttonState = digitalRead(BUTTON_PIN);
    printTemp(temp, buttonState);
-  
+
 }
 
 

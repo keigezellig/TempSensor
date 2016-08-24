@@ -23,21 +23,21 @@ RfxTemperatureSensor::RfxTemperatureSensor(uint8_t sensorId, uint8_t txPin, uint
 {
 }
 
-void RfxTemperatureSensor::setup()
+void RfxTemperatureSensor::setup(int sendIntervalInmsec)
 {
+   m_sendInterval = sendIntervalInmsec;
    m_x10Wrapper.setup();
    setupSensor();
 }
 
 void RfxTemperatureSensor::run()
 {
-   int interval = 4000; 
    m_temperature = readTemperature();
 
     unsigned long currentMillis = millis();
 
   //When interval has elapsed sent temperature
-  if (currentMillis - m_previousMillis >= interval)
+  if (currentMillis - m_previousMillis >= m_sendInterval)
   {
     m_previousMillis = currentMillis;
     sendTemperatureThroughRf();

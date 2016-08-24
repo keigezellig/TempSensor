@@ -51,8 +51,8 @@ const int MAX = 31;
 
 //X10RF specific configuration
 const int RF_REPEATS = 4;
-const int SENSOR_ID_TEMP = 0x20;
-const int SENSOR_ID_HUMIDITY = 0x21;
+const int SENSOR_ID_TEMP = 0xFF;
+const int SENSOR_ID_HUMIDITY = 0xFE;
 
 //Our rf transmitter and lcd
 rgb_lcd lcd;
@@ -138,6 +138,7 @@ void setup()
   setupRF();  
   setupLcd();  
   setupTH02();
+
 }
 
 float getTemperature()
@@ -155,12 +156,11 @@ void sendTemperature(float temp, int sensorId)
   //Get rid of the decimal point
   long T = (long)(temp * 100);
   uint32_t encoded = protocol.encode(T,0x01);
-//  Serial.println("Encoded: ");
-//  Serial.println(encoded);
-//  Serial.println("Decoded: ");
-//  Serial.println(decoded.value);
-//  Serial.println(decoded.unit);
-//  Serial.println("");
+  Serial.print("T= ");
+  Serial.println(T);
+  Serial.println("Encoded: ");
+  Serial.println(encoded);
+  Serial.println("");
   
   //Send it according to the RFXMeter protocol with value encoded according to the RfxFruit protocol
   rftrx.RFXmeter(sensorId,0,encoded); 
@@ -171,12 +171,11 @@ void sendHumidity(float h, int sensorId)
   //Get rid of the decimal point
   long hum = (long)(h * 100);
   uint32_t encoded = protocol.encode(hum,0x02);
-//  Serial.println("Encoded: ");
-//  Serial.println(encoded);
-//  Serial.println("Decoded: ");
-//  Serial.println(decoded.value);
-//  Serial.println(decoded.unit);
-//  Serial.println("");
+  Serial.print("H= ");
+  Serial.println(hum);
+  Serial.println("Encoded: ");
+  Serial.println(encoded);
+  Serial.println("");
 
   
   //Send it according to the RFXMeter protocol
@@ -243,8 +242,6 @@ void loop()
 {
   float temp = getTemperature();
   float humidity = getHumidity();
-  
-  
 
   int buttonState = HIGH; //digitalRead(BUTTON_PIN); 
   printTempAndHumidity(temp, humidity, buttonState);
@@ -253,10 +250,15 @@ void loop()
   //When interval has elapsed sent temperature
   if (currentMillis - previousMillis >= interval) 
   {
-    previousMillis = currentMillis;
-    sendTemperature(temp,SENSOR_ID_TEMP);
-    delay(500);
-    sendHumidity(humidity,SENSOR_ID_HUMIDITY);
+     lcd.setCursor(0,0);    
+     lcd.print("Sending ");
+     previousMillis = currentMillis;
+     sendTemperature(temp,SENSOR_ID_TEMP);
+     delay(500);
+     sendHumidity(humidity,SENSOR_ID_HUMIDITY);
+     lcd.setCursor(7,0);    
+     lcd.print(".");
+
      
   }  
 

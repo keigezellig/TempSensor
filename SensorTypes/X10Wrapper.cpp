@@ -6,7 +6,7 @@
 
 X10Wrapper::X10Wrapper(uint8_t txPin, uint8_t txLedPin, uint8_t txRepeats)
         : m_txPin(txPin), m_txLedPin(txLedPin),
-          m_txRepeats(txRepeats), m_rftrx(txPin,txLedPin,txRepeats);
+          m_txRepeats(txRepeats), m_rftrx(txPin,txLedPin,txRepeats)
 {
 
 }

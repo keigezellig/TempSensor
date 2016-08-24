@@ -11,6 +11,7 @@ private:
     float m_temperature;
     uint8_t m_sensorId;
     int m_previousMillis;
+    int m_sendInterval;
     RfxFruitProtocol m_fruitProtocol;
     X10Wrapper m_x10Wrapper;
     void sendTemperatureThroughRf();
@@ -22,7 +23,7 @@ protected:
 public:
     float getTemperature();
     RfxTemperatureSensor(uint8_t sensorId, uint8_t m_txPin, uint8_t m_txLedPin, uint8_t m_txRepeats);
-    void setup();
+    void setup(int sendIntervalInmsec);
     void run();
 };
 
