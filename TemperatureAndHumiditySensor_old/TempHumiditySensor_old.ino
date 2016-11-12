@@ -155,7 +155,7 @@ void sendTemperature(float temp, int sensorId)
 {    
   //Get rid of the decimal point
   long T = (long)(temp * 100);
-  uint32_t encoded = protocol.encode(T,0x01);
+  uint32_t encoded = protocol.encode(T,0x00);
   Serial.print("T= ");
   Serial.println(T);
   Serial.println("Encoded: ");
@@ -170,7 +170,7 @@ void sendHumidity(float h, int sensorId)
 {    
   //Get rid of the decimal point
   long hum = (long)(h * 100);
-  uint32_t encoded = protocol.encode(hum,0x02);
+  uint32_t encoded = protocol.encode(hum,0x01);
   Serial.print("H= ");
   Serial.println(hum);
   Serial.println("Encoded: ");
@@ -250,14 +250,14 @@ void loop()
   //When interval has elapsed sent temperature
   if (currentMillis - previousMillis >= interval) 
   {
-     lcd.setCursor(0,0);    
-     lcd.print("Sending ");
+     lcd.setCursor(14,0);    
+     lcd.print("*");
      previousMillis = currentMillis;
      sendTemperature(temp,SENSOR_ID_TEMP);
      delay(500);
      sendHumidity(humidity,SENSOR_ID_HUMIDITY);
-     lcd.setCursor(7,0);    
-     lcd.print(".");
+     lcd.setCursor(14,0);    
+     lcd.print(" ");
 
      
   }  

@@ -2,7 +2,7 @@ Rfx Fruit Encoding:
 
 24 bits encoded 
 
-bit 0-18: value (0-524287)
+bit 0-18: value (0-524287) (scaled by 100, i.e. a value of 4545 means 45.45
 bit 19: sign bit (0 = +, 1 = -) 
 Value range: -524287-524287
 bit 20-23: quantity type
@@ -11,17 +11,17 @@ bit 20-23: quantity type
 0x02: (air) pressure (hPa)
 0x03: luminance (lux)
 0x04: loudness (dB)
-0x05: rfu
-0x06: rfu
+0x05: current (A)
+0x06: voltage (V)
 0x07: rfu
 0x08: rfu
 0x09: rfu
 0x0A: rfu
 0x0B: rfu
 0x0C: rfu
-0x0D: electrical power consumption (kWh)
-0x0E: current (A)
-0x0F: voltage (V)
+0x0D: rfu
+0x0E: rfu
+0x0F: rfu
 
 Encode (to single int)
 ----------------------
@@ -52,6 +52,6 @@ input (byte[3])
 received_value = (input[0] << 16) + (uint)(input[1] << 8) + (uint)input[2];
 signbit = value & 0x80000 != 0;
 quantity_type = received_value >> 20;
-value = +/-(received_value & 0x7FFFF)
+value = +/-(received_value & 0x7FFFF) (unscaled)
 
  
